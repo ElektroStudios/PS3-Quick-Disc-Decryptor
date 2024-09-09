@@ -151,7 +151,7 @@ This work relies on the following resources:
 
 This Work (the repository and the content provided in) is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Work or the use or other dealings in the Work.
 
-This Work has no affiliation, approval or endorsement by Sony neither with the author(s) of any third-party resources used by this Work.
+This Work has no affiliation, approval or endorsement by Sony neither by the author(s) of any third-party resources used by this Work.
 
 ## 💪 Contributing
 
