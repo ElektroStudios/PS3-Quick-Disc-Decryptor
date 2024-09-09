@@ -36,12 +36,12 @@ emulators
 
 PS3 Quick Disc Decryptor is a - *yet another* - application that allows you to decrypt PS3 disc images (\*.iso files) in a friendly way.
 
-The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator (if available in their compatibility list).
+The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator (*if playable as per their compatibility list*).
 
 ## 👌 Features
 
  - Simple, user-friendly graphical user-interface.
- - Designed for batch operations.
+ - Designed for batch processing.
  - Meticulous status report and error handling.
  - Allows to abort the decryption procedure on demand.
  - Allows to see PS3Dec.exe output and progress in a embeded window.
@@ -61,11 +61,11 @@ The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulato
 
 Download the latest release by clicking [here](https://github.com/ElektroStudios/PS3-Quick-Disc-Decryptor/releases/latest).
 
-Open the program, configure the auto-descriptive program settings, and finally press the "Start Decryption button".
+Open the program, configure the auto-descriptive program settings, and finally press the button with name 'Start Decryption'.
 
 ## 🤖 Getting started with external resources
 
-#### Encrypted PS3 ISOs
+### Encrypted PS3 ISOs
 
 To use this program you will need encrypted PS3 disc images (\*.iso files) from the **Redump** group. It will not work with PS3 disc images from **NO-INTRO** or other groups.
 
@@ -86,11 +86,11 @@ To use this program you will need encrypted PS3 disc images (\*.iso files) from 
 
     ❗ Note that the program will **not** perform a recursive \*.iso file search.
 
-#### Decryption keys
+### Decryption keys
 
 To use this program you will need decryption keys for the **Redump**'s encrypted PS3 ISO files, which are distributed as plain text files that each contain a string of 32 characters long.
 
-1. Download a package with thousands of PS3 decryption keys from one of these links:
+1. Download the desired PS3 decryption keys from one of these links:
 
     - [Archive.org](https://archive.org/download/video_game_keys_and_sbi) (*only need to download the "Disc Keys TXT" zipped archive from here*)
     - [Myrient](https://myrient.erista.me/files/Redump/Sony%20-%20PlayStation%203%20-%20Disc%20Keys%20TXT/)
@@ -108,7 +108,7 @@ To use this program you will need decryption keys for the **Redump**'s encrypted
 
     ❗ Note that the program will **not** perform a recursive \*.dkey file search.
 
-#### PS3Dec.exe
+### PS3Dec.exe
 
 To use this program you will need a copy of **PS3Dec.exe** file, which is actually included in this package, however if you want to use your own:
 
