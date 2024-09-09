@@ -1,0 +1,1 @@
+This folder will store decrypted PS3 disc images by default.

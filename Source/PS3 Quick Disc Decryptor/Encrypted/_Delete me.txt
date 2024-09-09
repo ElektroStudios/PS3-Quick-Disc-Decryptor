@@ -1,0 +1,1 @@
+Put your Redump's encrypted PS3 disc images (*.iso files) in this folder.
