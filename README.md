@@ -36,7 +36,7 @@ emulators
 
 PS3 Quick Disc Decryptor is a - *yet another* - application that allows you to decrypt PS3 disc images (\*.iso files) in a friendly way.
 
-The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator (*if playable as per their compatibility list*).
+The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator (*if marked as playable in their compatibility list*).
 
 ## 👌 Features
 
@@ -63,7 +63,7 @@ Download the latest release by clicking [here](https://github.com/ElektroStudios
 
 Open the program, configure the auto-descriptive program settings, and finally press the button with name 'Start Decryption'.
 
-## 🤖 Getting started with external resources
+## 🌐 External resources
 
 ### Encrypted PS3 ISOs
 
