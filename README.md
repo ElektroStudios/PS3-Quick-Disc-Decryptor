@@ -18,9 +18,11 @@ playstation
 ps3
  -->
 
-# PS3 Quick Disc Decryptor ![screenshot](/Images/App_icon.png) ![screenshot](/Images/REDUMP.png)
+# PS3 Quick Disc Decryptor ![screenshot](/Images/REDUMP.png)
 
 ### User-Friendly GUI to decrypt Redump's PS3 disc images using PS3Dec.
+
+![screenshot](/Images/App_icon.png) 
 
 ------------------
 
