@@ -115,9 +115,10 @@ To use this program you will need a copy of **PS3Dec.exe** file, which is actual
 1. Download **PS3Dec.exe** from one of these links: 
 
     - [al3xtjames's modified version from RomHacking.net](https://www.romhacking.net/utilities/1456/)
-         *(✅ This is the one tested and already included in the program package)*
+           *(✅ This is the one tested and already included in the program package)*
 
     - [al3xtjames's Github repository](https://github.com/al3xtjames/PS3Dec) or one of its [forks](https://github.com/al3xtjames/PS3Dec/forks).
+
          (*❗ I have not tested any of those forks nor checked if they are virus free. Use them at your own risk.*)
 
        ❗  Do **not** try to use **PS3Dec.exe** from [Redrrx's Github repository](https://github.com/Redrrx/ps3dec), since it was rewrote using a different (incompatible) command-line syntax for my program.
