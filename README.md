@@ -15,14 +15,20 @@ windows-applications
 windows-forms 
 winforms 
 playstation
+playstation-3
 ps3
+playstation3
+consolegames
+games
+videogame
+emulators
  -->
 
-# PS3 Quick Disc Decryptor ![screenshot](/Images/REDUMP.png)
+# PS3 Quick Disc Decryptor 🔑
+
+![screenshot](/Images/REDUMP.png)
 
 ### User-Friendly GUI to decrypt Redump's PS3 disc images using PS3Dec.
-
-![screenshot](/Images/App_icon.png) 
 
 ------------------
 
