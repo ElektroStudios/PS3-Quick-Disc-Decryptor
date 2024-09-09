@@ -122,7 +122,7 @@ To use this program you will need a copy of **PS3Dec.exe** file, which is actual
 
       (*❗ I have not tested any of those forks nor checked if they are virus free. Use them at your own risk.*)
 
-       ❗  Do **not** try to use **PS3Dec.exe** from [Redrrx's Github repository](https://github.com/Redrrx/ps3dec), since it was rewrote using a different (incompatible) command-line syntax for my program.
+       ❗  Do **not** try to use **PS3Dec.exe** from [Redrrx's Github repository](https://github.com/Redrrx/ps3dec), since it was rewrote using a different (incompatible) command-line syntax with my program.
 
 2. Once you have your copy of **PS3Dec.exe**, in the program's user interface you just need to select the **PS3Dec.exe** file by doing click in the following button: 
 
