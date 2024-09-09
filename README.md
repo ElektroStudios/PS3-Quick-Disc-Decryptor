@@ -142,10 +142,10 @@ This work relies on the following resources:
  - [al3xtjames's PS3Dec](https://github.com/al3xtjames/PS3Dec)
  - [Redump Disc Preservation Project's PS3 resources](http://redump.org/discs/system/ps3/)
 
-🤔 Some PS3Dec GUI alternatives and decryptors to my program that you would try:
+🤔 Some PS3Dec GUI alternatives to my program that you would try:
 
- - [PS3 ISO Decryptor GUI](https://github.com/akinozgen/ps3dec-gui)
- - [PS3Dec Simple GUI](https://consolemods.org/wiki/File:PS3Dec_Simple_GUI_1.16.zip) (*❗ Ensure to use the PowerShell script instead of the standalone executable that has 36 virus alerts out of 72...*)
+ - [PS3Dec Simple GUI](https://consolemods.org/wiki/File:PS3Dec_Simple_GUI_1.16.zip)
+ - [PS3 ISO Decryptor GUI](https://github.com/akinozgen/ps3dec-gui) (*❗ Ensure to use the PowerShell script instead of the standalone executable that has 36 virus alerts out of 72...*)
 
 ## ⚠️ Disclaimer:
 
