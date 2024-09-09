@@ -92,7 +92,7 @@ To use this program you will need decryption keys for the **Redump**'s encrypted
 
 1. Download the desired PS3 decryption keys from one of these links:
 
-    - [Archive.org](https://archive.org/download/video_game_keys_and_sbi) (*only need to download the "Disc Keys TXT" zipped archive from here*)
+    - [Archive.org](https://archive.org/download/video_game_keys_and_sbi) (*you only require to download and extract the "Disc Keys TXT" zipped file*)
     - [Myrient](https://myrient.erista.me/files/Redump/Sony%20-%20PlayStation%203%20-%20Disc%20Keys%20TXT/)
     - [Aldo's Tools](https://ps3.aldostools.org/dkey.html)
     
