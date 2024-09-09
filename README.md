@@ -24,11 +24,11 @@ videogame
 emulators
  -->
 
-# PS3 Quick Disc Decryptor 🔑
-
-![screenshot](/Images/REDUMP.png)
+# PS3 Quick Disc Decryptor 💿🔑
 
 ### User-Friendly GUI to decrypt Redump's PS3 disc images using PS3Dec.
+
+![screenshot](/Images/REDUMP.png)
 
 ------------------
 
@@ -36,7 +36,7 @@ emulators
 
 PS3 Quick Disc Decryptor is a - *yet another* - application that allows you to decrypt PS3 disc images (\*.iso files) in a friendly way.
 
-The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator.
+The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulator (if available in their compatibility list).
 
 ## 👌 Features
 
