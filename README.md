@@ -61,7 +61,7 @@ The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulato
 
 Download the latest release by clicking [here](https://github.com/ElektroStudios/PS3-Quick-Disc-Decryptor/releases/latest).
 
-Open the program, configure the auto-descriptive program settings, and finally press the button with name 'Start Decryption'.
+Open the program, configure the *self-explanatory* program settings, and finally press the button with name 'Start Decryption'.
 
 ## 🌐 External resources
 
