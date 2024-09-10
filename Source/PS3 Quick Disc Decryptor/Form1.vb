@@ -89,8 +89,6 @@ Friend NotInheritable Class Form1
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) _
     Handles MyBase.FormClosing
 
-        Me.SaveUserSettings()
-
         If e.CloseReason = CloseReason.UserClosing Then
             If Not Me.cmdProcess?.HasExited OrElse Not Me.ps3DecProcess?.HasExited Then
                 Dim question As DialogResult =
@@ -110,8 +108,11 @@ Friend NotInheritable Class Form1
             End If
         End If
 
-        Me.UpdateStatus("Program is being closed.", writeToLogFile:=True)
-        Me.DeinitializeLogger()
+        If Not e.Cancel Then
+            Me.SaveUserSettings()
+            Me.UpdateStatus("Program is being closed.", writeToLogFile:=True)
+            Me.DeinitializeLogger()
+        End If
     End Sub
 
     Private Sub Button_StartDecryption_Click(sender As Object, e As EventArgs) _
