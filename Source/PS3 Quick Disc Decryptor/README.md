@@ -17,6 +17,7 @@ The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulato
  - Simple, user-friendly graphical user-interface.
  - Designed for batch processing.
  - Meticulous status report and error handling.
+ - Logging features.
  - Allows to abort the decryption procedure on demand.
  - Allows to see PS3Dec.exe output and progress in a embeded window.
  - Allows to automatically delete sucessfully decrypted disc images to save disk space.
