@@ -7,7 +7,6 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Threading
-Imports System.Windows
 
 Imports DevCase.Extensions
 Imports DevCase.Win32
@@ -83,7 +82,8 @@ Friend NotInheritable Class Form1
         Me.Opacity = 100
 
         Me.InitializeLogger()
-        Me.UpdateStatus("Program has been initialized.", writeToLogFile:=True)
+        Me.UpdateStatus("Program has been initialized.", writeToLogFile:=True, TraceEventType.Information)
+        Me.UpdateStatus("Program is ready. Press the ""Start Decryption"" button and you will see the decryption status here.", writeToLogFile:=False)
     End Sub
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) _
@@ -225,27 +225,28 @@ Friend NotInheritable Class Form1
 
         If e.Error IsNot Nothing Then
             If e.Error?.InnerException IsNot Nothing Then
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Unknown error", e.Error.InnerException.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Unknown error", e.Error.InnerException.Message, MessageBoxIcon.Error)
             Else
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Unknown error", e.Error.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Unknown error", e.Error.Message, MessageBoxIcon.Error)
             End If
         End If
 
         If e.Cancelled AndAlso Me.cancelRequested Then
             Me.UpdateStatus("Decryption procedure aborted on demand.", writeToLogFile:=False)
-            Form1.ShowInfoMessageBoxInUIThread(Me, My.Application.Info.Title, "Decryption procedure aborted on demand.")
+            Form1.ShowMessageBoxInUIThread(Me, My.Application.Info.Title, "Decryption procedure aborted on demand.", MessageBoxIcon.Information)
         ElseIf e.Cancelled Then
-            Me.UpdateStatus("Decryption procedure cancelled due an error.", writeToLogFile:=True)
+            Me.UpdateStatus("Decryption procedure cancelled due an error.", writeToLogFile:=True, TraceEventType.Stop)
         Else
             Me.UpdateStatus("Decryption procedure completed.", writeToLogFile:=False)
-            Form1.ShowInfoMessageBoxInUIThread(Me, My.Application.Info.Title, "Decryption procedure completed.")
+            Form1.ShowMessageBoxInUIThread(Me, My.Application.Info.Title, "Decryption procedure completed.", MessageBoxIcon.Information)
         End If
 
         Try
             Me.ps3DecOpenHandle?.Close()
             Me.ps3DecOpenHandle = Nothing
         Catch ex As Exception
-            Form1.ShowWarnMessageBoxInUIThread(Me, "Error releasing PS3Dec.exe file handle", ex.Message)
+            Me.UpdateStatus($"Error releasing PS3Dec.exe file handle. Error message: {ex.Message}", writeToLogFile:=True, TraceEventType.Warning)
+            ' Form1.ShowMessageBoxInUIThread(Me, "Error releasing PS3Dec.exe file handle", ex.Message, MessageBoxIcon.Warning)
         End Try
 
         Me.isos = Nothing
@@ -270,16 +271,16 @@ Friend NotInheritable Class Form1
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
     Private Function FetchISOs() As Boolean
 
-        Me.UpdateStatus("Fetching PS3 ISOs...", writeToLogFile:=True)
+        Me.UpdateStatus("Fetching encrypted PS3 ISOs...", writeToLogFile:=True)
         Try
             Me.isos = Form1.Settings.EncryptedPS3DiscsDir?.GetFiles("*.iso", SearchOption.TopDirectoryOnly)
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error fetching PS3 ISOs", ex.Message)
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 ISOs", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
         If Not Me.isos.Any() Then
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error fetching PS3 ISOs", $"Can't find any ISO files in the specified directory: '{Form1.Settings.EncryptedPS3DiscsDir}'")
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 ISOs", $"Can't find any ISO file in the specified directory: '{Form1.Settings.EncryptedPS3DiscsDir}'", MessageBoxIcon.Error)
             Return False
         End If
 
@@ -299,12 +300,12 @@ Friend NotInheritable Class Form1
                                      Where(Function(x) x.Extension.ToLowerInvariant() = ".dkey" OrElse
                                                        x.Extension.ToLowerInvariant() = ".txt")
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error fetching decryption keys", ex.Message)
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching decryption keys", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
         If Not Me.keys?.Any() Then
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error fetching decryption keys", $"Can't find any decryption key files in the specified directory: {Form1.Settings.DecryptionKeysDir}")
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching decryption keys", $"Can't find any decryption key files in the specified directory: {Form1.Settings.DecryptionKeysDir}", MessageBoxIcon.Error)
             Return False
         End If
 
@@ -318,7 +319,7 @@ Friend NotInheritable Class Form1
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
     Private Function BuildisoAndKeyPairs() As Boolean
 
-        Me.UpdateStatus("Matching PS3 ISOs with decryption keys...", writeToLogFile:=True)
+        Me.UpdateStatus("Matching encrypted PS3 ISOs with decryption keys...", writeToLogFile:=True)
         Try
             Me.isoAndKeyPairs = New Dictionary(Of FileInfo, FileInfo)
             For Each iso As FileInfo In Me.isos
@@ -333,17 +334,17 @@ Friend NotInheritable Class Form1
             Next iso
 
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error matching PS3 ISOs with decryption keys", ex.Message)
+            Form1.ShowMessageBoxInUIThread(Me, "Error matching encrypted PS3 ISOs with decryption keys", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
         Dim isosCount As Integer = Me.isos.Count
         Dim diffCount As Integer = isosCount - Me.isoAndKeyPairs.Count
         If diffCount = isosCount Then
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Missing decryption key matches", $"The program could not find any matchign decryption keys for the current ISOs.")
+            Form1.ShowMessageBoxInUIThread(Me, "Missing decryption key matches", $"The program could not find any matching decryption keys for the available PS3 ISOs.", MessageBoxIcon.Error)
             Return False
         ElseIf diffCount <> 0 Then
-            Form1.ShowWarnMessageBoxInUIThread(Me, "Missing decryption key matches", $"The program could not find matchign decryption keys for {diffCount} out of {isosCount} ISOs.{Environment.NewLine & Environment.NewLine}The program will proceed now decrypting the remaining ISOs.")
+            Form1.ShowMessageBoxInUIThread(Me, "Missing decryption key matches", $"The program could not find matching decryption keys for {diffCount} out of {isosCount} PS3 ISOs.{Environment.NewLine & Environment.NewLine}The program will proceed now decrypting the remaining ISOs.", MessageBoxIcon.Warning)
         End If
 
         Return True
@@ -357,14 +358,14 @@ Friend NotInheritable Class Form1
 
         Me.UpdateStatus("Acquiring PS3Dec.exe file handle...", writeToLogFile:=True)
         If Not Form1.Settings.PS3DecExeFile.Exists Then
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error acquiring PS3Dec.exe file handle", $"PS3Dec.exe was not found at: {Form1.Settings.PS3DecExeFile.FullName}")
+            Form1.ShowMessageBoxInUIThread(Me, "Error acquiring PS3Dec.exe file handle", $"PS3Dec.exe was not found at: {Form1.Settings.PS3DecExeFile.FullName}", MessageBoxIcon.Error)
             Return False
         End If
 
         Try
             Me.ps3DecOpenHandle = Form1.Settings.PS3DecExeFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read)
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error acquiring PS3Dec.exe file handle", ex.Message)
+            Form1.ShowMessageBoxInUIThread(Me, "Error acquiring PS3Dec.exe file handle", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
@@ -384,7 +385,7 @@ Friend NotInheritable Class Form1
             Exit Sub
         End If
 
-        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Writing decrypted ISO to output directory...", writeToLogFile:=True)
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Writing decrypted PS3 ISO to output directory...", writeToLogFile:=True)
         If Not Me.EnsureOutputDirectoryExists() Then
             Exit Sub
         End If
@@ -401,7 +402,7 @@ Friend NotInheritable Class Form1
         Try
             Dim dkeyString As String = File.ReadAllText(keyFile.FullName, Encoding.Default).Trim()
             If dkeyString.Length <> 32 Then
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error parsing decryption key file content", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: Decryption key has an invalid length of {dkeyString.Length} (it must be 32 character length).")
+                Form1.ShowMessageBoxInUIThread(Me, "Error parsing decryption key file content", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: Decryption key has an invalid length of {dkeyString.Length} (it must be 32 character length).", MessageBoxIcon.Error)
                 Return False
             End If
 
@@ -411,14 +412,14 @@ Friend NotInheritable Class Form1
             Dim isHexString As Boolean = StringExtensions.IsHexadecimal(dkeyString)
 #End If
             If Not isHexString Then
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error parsing decryption key file content", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: Decryption key has not a valid hexadecimal format.")
+                Form1.ShowMessageBoxInUIThread(Me, "Error parsing decryption key file content", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: Decryption key has not a valid hexadecimal format.", MessageBoxIcon.Error)
                 Return False
             End If
 
             refKeyString = dkeyString
 
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, "Error reading decryption key file", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: {ex.Message}")
+            Form1.ShowMessageBoxInUIThread(Me, "Error reading decryption key file", $"File: {keyFile.FullName}{Environment.NewLine & Environment.NewLine}Error message: {ex.Message}", MessageBoxIcon.Error)
             Return False
 
         End Try
@@ -436,7 +437,7 @@ Friend NotInheritable Class Form1
             Try
                 Form1.Settings.OutputDir.Create()
             Catch ex As Exception
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error creating output directory", ex.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Error creating output directory", ex.Message, MessageBoxIcon.Error)
                 Return False
             End Try
         End If
@@ -462,7 +463,7 @@ Friend NotInheritable Class Form1
             Try
                 Me.cmdProcess.Start()
             Catch ex As Exception
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message, MessageBoxIcon.Error)
                 Exit Sub
             End Try
 
@@ -505,7 +506,7 @@ Friend NotInheritable Class Form1
             Try
                 Me.cmdProcess.WaitForExit()
             Catch ex As Exception
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message, MessageBoxIcon.Error)
                 Exit Sub
             End Try
 
@@ -523,7 +524,7 @@ Friend NotInheritable Class Form1
                 Me.ps3DecProcess.Start()
                 Me.ps3DecProcess.WaitForExit()
             Catch ex As Exception
-                Form1.ShowErrorMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message)
+                Form1.ShowMessageBoxInUIThread(Me, "Error executing PS3Dec.exe", ex.Message, MessageBoxIcon.Error)
                 Exit Sub
             End Try
         End If
@@ -533,6 +534,8 @@ Friend NotInheritable Class Form1
             Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {isoFile.Name} | Decryption completed.", writeToLogFile:=True)
             Me.CanDeleteEncryptedISO(isoFile)
             Me.CanDeleteDecryptionKey(Me.isoAndKeyPairs(isoFile))
+        Else
+            Me.UpdateStatus($"PS3Dec.exe failed to decrypt, with exit code: {currentProcess.ExitCode}", writeToLogFile:=True)
         End If
     End Sub
 
@@ -542,7 +545,8 @@ Friend NotInheritable Class Form1
             Try
                 iso.Delete()
             Catch ex As Exception
-                Form1.ShowWarnMessageBoxInUIThread(Me, "Error deleting encrypted PS3 ISO", ex.Message)
+                Me.UpdateStatus($"Error deleting encrypted PS3 ISO. Error message: {ex.Message}", writeToLogFile:=True, TraceEventType.Warning)
+                ' Form1.ShowMessageBoxInUIThread(Me, "Error deleting encrypted PS3 ISO", ex.Message, MessageBoxIcon.Warning)
             End Try
         End If
     End Sub
@@ -553,15 +557,16 @@ Friend NotInheritable Class Form1
             Try
                 key.Delete()
             Catch ex As Exception
-                Form1.ShowWarnMessageBoxInUIThread(Me, "Error deleting decryption key", ex.Message)
+                Me.UpdateStatus($"Error deleting decryption key. Error message: {ex.Message}", writeToLogFile:=True, TraceEventType.Warning)
+                ' Form1.ShowMessageBoxInUIThread(Me, "Error deleting decryption key", ex.Message, MessageBoxIcon.Warning)
             End Try
         End If
     End Sub
 
-    Private Sub UpdateStatus(statusText As String, writeToLogFile As Boolean)
+    Private Sub UpdateStatus(statusText As String, writeToLogFile As Boolean, Optional eventType As TraceEventType = TraceEventType.Information)
         Me.ToolStripStatusLabel1.Text = statusText
         If writeToLogFile Then
-            Form1.WriteLogEntry(TraceEventType.Information, statusText)
+            Form1.WriteLogEntry(eventType, statusText)
         End If
     End Sub
 
@@ -577,7 +582,7 @@ Friend NotInheritable Class Form1
     End Sub
 
     Private Shared Sub WriteLogEntry(eventType As TraceEventType, message As String)
-        If Not Form1.Settings.LogEnabled Then
+        If Not Form1.Settings.LogEnabled OrElse Form1.logFileWriter Is Nothing Then
             Return
         End If
 
@@ -589,7 +594,7 @@ Friend NotInheritable Class Form1
     End Sub
 
     Private Sub DeinitializeLogger()
-        If Not Form1.Settings.LogEnabled Then
+        If Not Form1.Settings.LogEnabled OrElse Form1.logFileWriter Is Nothing Then
             Return
         End If
 
@@ -605,24 +610,25 @@ Friend NotInheritable Class Form1
                                          End Sub)
     End Sub
 
-    Friend Shared Sub ShowInfoMessageBoxInUIThread(f As Form, title As String, message As String)
-        f.Invoke(Sub() MessageBox.Show(f, message, title, MessageBoxButtons.OK, MessageBoxIcon.Information))
-        Form1.WriteLogEntry(TraceEventType.Information, message)
-    End Sub
+    Friend Shared Sub ShowMessageBoxInUIThread(f As Form, title As String, message As String, icon As MessageBoxIcon)
+        f.Invoke(Sub() MessageBox.Show(f, message, title, MessageBoxButtons.OK, icon))
 
-    Friend Shared Sub ShowErrorMessageBoxInUIThread(f As Form, title As String, message As String)
-        f.Invoke(Sub() MessageBox.Show(f, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error))
-        Form1.WriteLogEntry(TraceEventType.Critical, message)
-    End Sub
+        Select Case icon
+            Case MessageBoxIcon.Error
+                Form1.WriteLogEntry(TraceEventType.Critical, message)
 
-    Friend Shared Sub ShowWarnMessageBoxInUIThread(f As Form, title As String, message As String)
-        f.Invoke(Sub() MessageBox.Show(f, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning))
-        Form1.WriteLogEntry(TraceEventType.Warning, message)
+            Case MessageBoxIcon.Warning
+                Form1.WriteLogEntry(TraceEventType.Warning, message)
+
+            Case Else
+                Form1.WriteLogEntry(TraceEventType.Information, message)
+        End Select
     End Sub
 
     Private Sub SaveUserSettings()
         Try
             If Form1.Settings.SaveSettingsOnExit Then
+                Me.UpdateStatus($"Saving user settings...", writeToLogFile:=True)
                 My.Settings.EncryptedPS3DiscsDir = Form1.Settings.EncryptedPS3DiscsDir.FullName
                 My.Settings.DecryptionKeysDir = Form1.Settings.DecryptionKeysDir.FullName
                 My.Settings.PS3DecExePath = Form1.Settings.PS3DecExeFile.FullName
@@ -643,7 +649,7 @@ Friend NotInheritable Class Form1
                 My.Settings.Reset()
             End If
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, My.Application.Info.Title, $"Error saving user settings: {ex.Message}")
+            Form1.ShowMessageBoxInUIThread(Me, My.Application.Info.Title, $"Error saving user settings: {ex.Message}", MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -651,6 +657,7 @@ Friend NotInheritable Class Form1
 
         Try
             If My.Settings.SaveSettingsOnExit Then
+                Me.UpdateStatus($"Loading user settings...", writeToLogFile:=True)
                 Dim dirPath As String = My.Application.Info.DirectoryPath
                 Form1.Settings.EncryptedPS3DiscsDir = New DirectoryInfo(My.Settings.EncryptedPS3DiscsDir.Replace(dirPath, "."))
                 Form1.Settings.DecryptionKeysDir = New DirectoryInfo(My.Settings.DecryptionKeysDir.Replace(dirPath, "."))
@@ -669,7 +676,7 @@ Friend NotInheritable Class Form1
                 Form1.Settings.SaveSettingsOnExit = My.Settings.SaveSettingsOnExit
             End If
         Catch ex As Exception
-            Form1.ShowErrorMessageBoxInUIThread(Me, My.Application.Info.Title, $"Error loading user settings: {ex.Message}")
+            Form1.ShowMessageBoxInUIThread(Me, My.Application.Info.Title, $"Error loading user settings: {ex.Message}", MessageBoxIcon.Error)
         End Try
     End Sub
 

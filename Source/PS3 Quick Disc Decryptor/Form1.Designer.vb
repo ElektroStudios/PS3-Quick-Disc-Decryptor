@@ -79,8 +79,8 @@ Partial Class Form1
         ' ToolStripStatusLabel1
         ' 
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New Size(538, 17)
-        Me.ToolStripStatusLabel1.Text = "The program is ready. Press the ""Start Decryption"" button and you will see the decryption status here."
+        Me.ToolStripStatusLabel1.Size = New Size(16, 17)
+        Me.ToolStripStatusLabel1.Text = "..."
         ' 
         ' BackgroundWorker1
         ' 
