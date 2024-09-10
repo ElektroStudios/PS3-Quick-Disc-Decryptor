@@ -27,7 +27,7 @@ The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulato
 
 <img src="https://github.com/ElektroStudios/PS3-Quick-Disc-Decryptor/raw/main/Images/Screenshot_07.png"></p>
 
-Compact Mode:
+##### Compact Mode:
 
 <img src="https://github.com/ElektroStudios/PS3-Quick-Disc-Decryptor/raw/main/Images/Screenshot_08.png"></p>
 
