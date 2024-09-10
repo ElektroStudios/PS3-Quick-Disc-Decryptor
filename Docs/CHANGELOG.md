@@ -1,6 +1,13 @@
 # PS3 Quick Disc Decryptor Change Log 📋
 
-## v1.1 *(current)* 🆕
+## v1.2 *(current)* 🆕
+#### 🌟 Improvements:
+    • Added basic PS3 disc image file (*.iso) validation.
+    • Added progress on Windows task bar.
+#### 🛠️ Fixes:
+    • The status label disappear when the ISO name exceeds the window bounds.
+
+## v1.1 🔄
 #### 🚀 New Features:
     • Added new program settings:
       • Delete decryption keys after use

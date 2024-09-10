@@ -78,9 +78,13 @@ Partial Class Form1
         ' 
         ' ToolStripStatusLabel1
         ' 
+        Me.ToolStripStatusLabel1.DisplayStyle = ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusLabel1.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point)
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New Size(16, 17)
+        Me.ToolStripStatusLabel1.Size = New Size(602, 17)
+        Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.Text = "..."
+        Me.ToolStripStatusLabel1.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' BackgroundWorker1
         ' 

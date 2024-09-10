@@ -4,12 +4,19 @@ Option Infer Off
 
 Imports System.ComponentModel
 Imports System.IO
+Imports System.IO.Compression
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Threading
 
 Imports DevCase.Extensions
 Imports DevCase.Win32
+
+Imports DiscUtils
+
+Imports DiscUtils.Iso9660
+
+Imports Microsoft.WindowsAPICodePack.Taskbar
 
 Friend NotInheritable Class Form1
 
@@ -71,7 +78,7 @@ Friend NotInheritable Class Form1
     Handles MyBase.Load
 
         Me.PropertyGrid_Settings.SelectedObject = Form1.Settings
-        Me.Text = $"{My.Application.Info.Title} v{My.Application.Info.Version}"
+        Me.Text = $"{My.Application.Info.Title} (PS3QDD) v{My.Application.Info.Version} | By ElektroStudios"
     End Sub
 
     Private Sub Form1_Shown(sender As Object, e As EventArgs) _
@@ -168,7 +175,8 @@ Friend NotInheritable Class Form1
         table.ResumeLayout(performLayout:=True)
     End Sub
 
-    Private Sub TableLayoutPanel1_Resize(sender As Object, e As EventArgs) Handles TableLayoutPanel1.Resize
+    Private Sub TableLayoutPanel1_Resize(sender As Object, e As EventArgs) _
+    Handles TableLayoutPanel1.Resize
 
         If Form1.Settings.CompactMode OrElse Me.cmdProcess Is Nothing Then
             Exit Sub
@@ -189,7 +197,7 @@ Friend NotInheritable Class Form1
     Handles BackgroundWorker1.DoWork
 
         Me.UpdateStatus($"Starting a new decryption procedure...", writeToLogFile:=True)
-        Me.UpdateProgressBar(1, 0)
+        Me.ResetProgressBar()
 
         If Not Me.FetchISOs() OrElse
            Not Me.FetchDecryptionKeys() OrElse
@@ -274,6 +282,7 @@ Friend NotInheritable Class Form1
         Me.UpdateStatus("Fetching encrypted PS3 ISOs...", writeToLogFile:=True)
         Try
             Me.isos = Form1.Settings.EncryptedPS3DiscsDir?.GetFiles("*.iso", SearchOption.TopDirectoryOnly)
+
         Catch ex As Exception
             Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 ISOs", ex.Message, MessageBoxIcon.Error)
             Return False
@@ -351,6 +360,38 @@ Friend NotInheritable Class Form1
     End Function
 
     ''' <summary>
+    ''' Validates a PS3 ISO file.
+    ''' </summary>
+    ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
+    Private Function ValidatePS3Iso(iso As FileInfo) As Boolean
+
+        Try
+            Using isoStream As FileStream = File.OpenRead(iso.FullName),
+                  cd As New CDReader(isoStream, joliet:=False)
+
+                Dim isExpectedClusterSize As Boolean = cd.ClusterSize = 2048
+                Dim isExpectedVolumeLabel As Boolean = cd.VolumeLabel = "PS3VOLUME"
+
+                Dim existsPS3GAMEDir As Boolean =
+                    cd.Root.GetDirectories("PS3_GAME", SearchOption.TopDirectoryOnly).Any()
+
+                If Not isExpectedClusterSize OrElse
+                   Not isExpectedVolumeLabel OrElse
+                   Not existsPS3GAMEDir Then
+                    Form1.ShowMessageBoxInUIThread(Me, "Error validating encrypted PS3 ISO", $"The ISO file is not a PS3 disc image: {iso.FullName}", MessageBoxIcon.Error)
+                    Return False
+                End If
+            End Using
+
+        Catch ex As Exception
+            Form1.ShowMessageBoxInUIThread(Me, $"Error validating encrypted PS3 PS3 ISO.{Environment.NewLine & Environment.NewLine}File: {iso.FullName}{Environment.NewLine & Environment.NewLine}Error message: {ex.Message}", ex.Message, MessageBoxIcon.Error)
+            Return False
+        End Try
+
+        Return True
+    End Function
+
+    ''' <summary>
     ''' Validates the PS3Dec.exe file.
     ''' </summary>
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
@@ -382,6 +423,11 @@ Friend NotInheritable Class Form1
         Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Parsing decryption key file content...", writeToLogFile:=True)
         Dim dkeyString As String = Nothing
         If Not Me.ReadDecryptionKey(pair.Value, dkeyString) Then
+            Exit Sub
+        End If
+
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Validating encrypted PS3 ISO...", writeToLogFile:=True)
+        If Not Me.ValidatePS3Iso(pair.Key) Then
             Exit Sub
         End If
 
@@ -576,7 +622,7 @@ Friend NotInheritable Class Form1
         End If
 
         Form1.logFileWriter = New StreamWriter(Form1.Settings.LogFile.FullName, append:=Form1.Settings.LogAppendMode, encoding:=Encoding.UTF8, bufferSize:=1024) With {.AutoFlush = True}
-        Form1.logFileWriter.WriteLine(String.Format("          Log Date {0}          ", Date.Now.Date.ToShortDateString()))
+        Form1.logFileWriter.WriteLine(String.Format("          Log Date: {0}          ", Date.Now.Date.ToShortDateString()))
         Form1.logFileWriter.WriteLine("=========================================")
         Form1.logFileWriter.WriteLine()
     End Sub
@@ -598,9 +644,19 @@ Friend NotInheritable Class Form1
             Return
         End If
 
-        Form1.logFileWriter.WriteLine("End of log session.")
-        Form1.logFileWriter.WriteLine()
-        Form1.logFileWriter.Close()
+        Try
+            Form1.logFileWriter.WriteLine("End of log session.")
+            Form1.logFileWriter.WriteLine()
+            Form1.logFileWriter.Close()
+        Catch ex As Exception
+            ' Ignore.
+        End Try
+    End Sub
+
+    Private Sub ResetProgressBar()
+        Me.UpdateProgressBar(1, 0)
+        TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal)
+        TaskbarManager.Instance.SetProgressValue(0, 0)
     End Sub
 
     Private Sub UpdateProgressBar(maxValue As Integer, currentValue As Integer)
@@ -608,6 +664,7 @@ Friend NotInheritable Class Form1
                                              Me.ProgressBar_Decryption.Maximum = maxValue
                                              Me.ProgressBar_Decryption.Value = currentValue
                                          End Sub)
+        TaskbarManager.Instance.SetProgressValue(currentValue, maxValue)
     End Sub
 
     Friend Shared Sub ShowMessageBoxInUIThread(f As Form, title As String, message As String, icon As MessageBoxIcon)

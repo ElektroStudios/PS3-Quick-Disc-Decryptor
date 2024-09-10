@@ -145,6 +145,8 @@ Explore the complete list of changes, bug fixes and improvements across differen
 This work relies on the following resources: 
 
  - [al3xtjames's PS3Dec](https://github.com/al3xtjames/PS3Dec)
+ - [DiscUtils](https://github.com/discutils/discutils)
+ - [WinCopies Windows API Code Pack](https://wincopies.com/windows_api_codepack/)
  - [Redump Disc Preservation Project's PS3 resources](http://redump.org/discs/system/ps3/)
 
 🤔 Some PS3Dec GUI alternatives to my program that you would try:
