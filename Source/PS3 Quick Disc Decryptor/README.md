@@ -83,7 +83,7 @@ To use this program you will need decryption keys for the **Redump**'s encrypted
 
 <img src="https://github.com/ElektroStudios/PS3-Quick-Disc-Decryptor/raw/main/Images/Screenshot_04.png"></p>
 
-    💡 Tip: You can put all the \*.dkey files in a folder with name "DKeys" inside the program directory to skip this step.
+    💡 Tip: You can put all the \*.dkey files in a folder with name "Keys" inside the program directory to skip this step.
 
     ❗ Note that the program will **not** perform a recursive \*.dkey file search.
 
