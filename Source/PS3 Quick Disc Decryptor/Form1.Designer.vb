@@ -25,46 +25,54 @@ Partial Class Form1
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.PropertyGrid_Settings = New PropertyGrid()
         Me.Button_StartDecryption = New Button()
-        Me.ProgressBar1 = New ProgressBar()
+        Me.ProgressBar_Decryption = New ProgressBar()
         Me.StatusStrip1 = New StatusStrip()
         Me.ToolStripStatusLabel1 = New ToolStripStatusLabel()
         Me.BackgroundWorker1 = New ComponentModel.BackgroundWorker()
         Me.Button_Abort = New Button()
         Me.TextBox_PS3Dec_Output = New TextBox()
+        Me.TableLayoutPanel1 = New TableLayoutPanel()
+        Me.Panel_Buttons = New Panel()
         Me.StatusStrip1.SuspendLayout()
+        Me.TableLayoutPanel1.SuspendLayout()
+        Me.Panel_Buttons.SuspendLayout()
         Me.SuspendLayout()
         ' 
         ' PropertyGrid_Settings
         ' 
-        Me.PropertyGrid_Settings.Location = New Point(12, 12)
+        Me.PropertyGrid_Settings.Dock = DockStyle.Fill
+        Me.PropertyGrid_Settings.Location = New Point(3, 3)
         Me.PropertyGrid_Settings.Name = "PropertyGrid_Settings"
         Me.PropertyGrid_Settings.PropertySort = PropertySort.Categorized
-        Me.PropertyGrid_Settings.Size = New Size(706, 247)
+        Me.PropertyGrid_Settings.Size = New Size(642, 266)
         Me.PropertyGrid_Settings.TabIndex = 9
         Me.PropertyGrid_Settings.ToolbarVisible = False
         ' 
         ' Button_StartDecryption
         ' 
-        Me.Button_StartDecryption.Location = New Point(12, 451)
+        Me.Button_StartDecryption.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left
+        Me.Button_StartDecryption.Location = New Point(3, 6)
         Me.Button_StartDecryption.Name = "Button_StartDecryption"
-        Me.Button_StartDecryption.Size = New Size(144, 35)
+        Me.Button_StartDecryption.Size = New Size(127, 33)
         Me.Button_StartDecryption.TabIndex = 10
         Me.Button_StartDecryption.Text = "Start Decryption"
         Me.Button_StartDecryption.UseVisualStyleBackColor = True
         ' 
-        ' ProgressBar1
+        ' ProgressBar_Decryption
         ' 
-        Me.ProgressBar1.Location = New Point(312, 451)
-        Me.ProgressBar1.Name = "ProgressBar1"
-        Me.ProgressBar1.Size = New Size(405, 35)
-        Me.ProgressBar1.TabIndex = 12
+        Me.ProgressBar_Decryption.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
+        Me.ProgressBar_Decryption.Location = New Point(270, 6)
+        Me.ProgressBar_Decryption.Name = "ProgressBar_Decryption"
+        Me.ProgressBar_Decryption.Size = New Size(369, 33)
+        Me.ProgressBar_Decryption.TabIndex = 12
         ' 
         ' StatusStrip1
         ' 
         Me.StatusStrip1.Items.AddRange(New ToolStripItem() {Me.ToolStripStatusLabel1})
-        Me.StatusStrip1.Location = New Point(0, 494)
+        Me.StatusStrip1.Location = New Point(0, 470)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New Size(729, 22)
+        Me.StatusStrip1.Padding = New Padding(2, 0, 13, 0)
+        Me.StatusStrip1.Size = New Size(648, 22)
         Me.StatusStrip1.TabIndex = 13
         Me.StatusStrip1.Text = "StatusStrip1"
         ' 
@@ -80,10 +88,11 @@ Partial Class Form1
         ' 
         ' Button_Abort
         ' 
+        Me.Button_Abort.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left
         Me.Button_Abort.Enabled = False
-        Me.Button_Abort.Location = New Point(162, 451)
+        Me.Button_Abort.Location = New Point(136, 6)
         Me.Button_Abort.Name = "Button_Abort"
-        Me.Button_Abort.Size = New Size(144, 35)
+        Me.Button_Abort.Size = New Size(128, 33)
         Me.Button_Abort.TabIndex = 14
         Me.Button_Abort.Text = "Abort"
         Me.Button_Abort.UseVisualStyleBackColor = True
@@ -92,46 +101,74 @@ Partial Class Form1
         ' 
         Me.TextBox_PS3Dec_Output.BackColor = Color.FromArgb(CByte(30), CByte(30), CByte(30))
         Me.TextBox_PS3Dec_Output.BorderStyle = BorderStyle.FixedSingle
+        Me.TextBox_PS3Dec_Output.Dock = DockStyle.Fill
         Me.TextBox_PS3Dec_Output.Enabled = False
         Me.TextBox_PS3Dec_Output.ForeColor = Color.IndianRed
-        Me.TextBox_PS3Dec_Output.Location = New Point(12, 265)
+        Me.TextBox_PS3Dec_Output.Location = New Point(3, 275)
         Me.TextBox_PS3Dec_Output.Multiline = True
         Me.TextBox_PS3Dec_Output.Name = "TextBox_PS3Dec_Output"
         Me.TextBox_PS3Dec_Output.ReadOnly = True
-        Me.TextBox_PS3Dec_Output.Size = New Size(706, 180)
+        Me.TextBox_PS3Dec_Output.Size = New Size(642, 144)
         Me.TextBox_PS3Dec_Output.TabIndex = 0
+        ' 
+        ' TableLayoutPanel1
+        ' 
+        Me.TableLayoutPanel1.ColumnCount = 1
+        Me.TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        Me.TableLayoutPanel1.Controls.Add(Me.Panel_Buttons, 0, 2)
+        Me.TableLayoutPanel1.Controls.Add(Me.PropertyGrid_Settings, 0, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.TextBox_PS3Dec_Output, 0, 1)
+        Me.TableLayoutPanel1.Dock = DockStyle.Fill
+        Me.TableLayoutPanel1.Location = New Point(0, 0)
+        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
+        Me.TableLayoutPanel1.RowCount = 3
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 58F))
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 32F))
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 10F))
+        Me.TableLayoutPanel1.Size = New Size(648, 470)
+        Me.TableLayoutPanel1.TabIndex = 15
+        ' 
+        ' Panel_Buttons
+        ' 
+        Me.Panel_Buttons.Controls.Add(Me.Button_StartDecryption)
+        Me.Panel_Buttons.Controls.Add(Me.Button_Abort)
+        Me.Panel_Buttons.Controls.Add(Me.ProgressBar_Decryption)
+        Me.Panel_Buttons.Dock = DockStyle.Fill
+        Me.Panel_Buttons.Location = New Point(3, 425)
+        Me.Panel_Buttons.Name = "Panel_Buttons"
+        Me.Panel_Buttons.Size = New Size(642, 42)
+        Me.Panel_Buttons.TabIndex = 16
         ' 
         ' Form1
         ' 
-        Me.AutoScaleDimensions = New SizeF(9F, 21F)
+        Me.AutoScaleDimensions = New SizeF(8F, 20F)
         Me.AutoScaleMode = AutoScaleMode.Font
-        Me.ClientSize = New Size(729, 516)
-        Me.Controls.Add(Me.TextBox_PS3Dec_Output)
-        Me.Controls.Add(Me.Button_Abort)
+        Me.ClientSize = New Size(648, 492)
+        Me.Controls.Add(Me.TableLayoutPanel1)
         Me.Controls.Add(Me.StatusStrip1)
-        Me.Controls.Add(Me.ProgressBar1)
-        Me.Controls.Add(Me.Button_StartDecryption)
-        Me.Controls.Add(Me.PropertyGrid_Settings)
-        Me.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
-        Me.FormBorderStyle = FormBorderStyle.FixedSingle
+        Me.Font = New Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point)
         Me.Icon = CType(resources.GetObject("$this.Icon"), Icon)
-        Me.Margin = New Padding(4)
         Me.MaximizeBox = False
         Me.Name = "Form1"
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.Text = "PS3 Quick Disc Decryptor"
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.TableLayoutPanel1.ResumeLayout(False)
+        Me.TableLayoutPanel1.PerformLayout()
+        Me.Panel_Buttons.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
     End Sub
     Friend WithEvents PropertyGrid_Settings As PropertyGrid
     Friend WithEvents Button_StartDecryption As Button
-    Friend WithEvents ProgressBar1 As ProgressBar
+    Friend WithEvents ProgressBar_Decryption As ProgressBar
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents ToolStripStatusLabel1 As ToolStripStatusLabel
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
     Friend WithEvents Button_Abort As Button
     Friend WithEvents TextBox_PS3Dec_Output As TextBox
+    Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
+    Friend WithEvents Panel_Buttons As Panel
 
 End Class

@@ -24,15 +24,18 @@ Friend NotInheritable Class PS3DecFileDialogEditor : Inherits UITypeEditor
             .DereferenceLinks = True,
             .RestoreDirectory = True,
             .ShowHelp = False,
-            .Multiselect = False, .Filter = "|PS3Dec.exe"
+            .Multiselect = False,
+            .Filter = "|PS3Dec.exe"
         }
 
             If dlg.ShowDialog() = DialogResult.OK Then
+#Disable Warning IDE0046 ' Convert to conditional expression
                 If TypeOf value Is FileInfo Then
                     Return New FileInfo(dlg.FileName)
                 Else
                     Return dlg.FileName
                 End If
+#Enable Warning IDE0046 ' Convert to conditional expression
             End If
         End Using
 

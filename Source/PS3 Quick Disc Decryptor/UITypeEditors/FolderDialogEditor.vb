@@ -25,16 +25,20 @@ Friend Class FolderDialogEditor : Inherits UITypeEditor
         }
 
         If dlg.ShowDialog() = DialogResult.OK Then
+#Disable Warning IDE0046 ' Convert to conditional expression
             If TypeOf value Is DirectoryInfo Then
                 Return New DirectoryInfo(dlg.SelectedPath)
             Else
                 Return dlg.SelectedPath
             End If
+#Enable Warning IDE0046 ' Convert to conditional expression
 
         Else
             Return value
 
         End If
+
+        Return MyBase.EditValue(context, provider, value)
     End Function
 
 End Class
