@@ -3,16 +3,16 @@
 ## v1.1 *(current)* 🆕
 #### 🚀 New Features:
   • Added new program settings:
-    • Delete decryption keys after use
-    • Compact Mode
-    • Remember size and position
-    • Remember current settings
-    • Restore default settings
+      • Delete decryption keys after use
+      • Compact Mode
+      • Remember size and position
+      • Remember current settings
+      • Restore default settings
 
   • Added basic logging features, configurable through these new program settings:
-    • Log file
-    • Enabled
-    • Append mode
+      • Log file
+      • Enabled
+      • Append mode
 
 #### 🌟 Improvements:
   • Program settings had been categorized.
