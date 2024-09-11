@@ -5,7 +5,7 @@
     • Added basic PS3 disc image file (*.iso) validation.
     • Added progress on Windows task bar.
 #### 🛠️ Fixes:
-    • The status label disappear when the ISO name exceeds the window bounds.
+    • The status label disappear when the string exceeds the window bounds.
 
 ## v1.1 🔄
 #### 🚀 New Features:
