@@ -18,7 +18,7 @@ Friend NotInheritable Class RestoreDefaultValuesEditor : Inherits UITypeEditor
     Public Overrides Function EditValue(context As ITypeDescriptorContext, provider As IServiceProvider, value As Object) As Object
         Form1.Settings.SetDefaultValues()
         Form1.PropertyGrid_Settings.Refresh()
-        Form1.ShowMessageBoxInUIThread(Form1, My.Application.Info.Title, "Default values has been restored for program settings.", MessageBoxIcon.Information)
+        Form1.ShowMessageBoxInUIThread(Form1, My.Application.Info.Title, "The default values for the program settings have been restored.", MessageBoxIcon.Information)
         Return MyBase.EditValue(context, provider, value)
     End Function
 

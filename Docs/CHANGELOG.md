@@ -1,11 +1,18 @@
 # PS3 Quick Disc Decryptor Change Log 📋
 
-## v1.2 *(current)* 🆕
+## v1.3 *(current)* 🆕
+#### 🌟 New Features:
+    • Added support for zip archives (for both PS3 disc images and decryption key files).
+#### 🌟 Improvements:
+    • Additional PS3Dec process error information when compact mode is enabled.
+    • Implemented checks for the required disk space needed for unzipping and decrypting
+
+## v1.2 🔄
 #### 🌟 Improvements:
     • Added basic PS3 disc image file (*.iso) validation.
     • Added progress on Windows task bar.
 #### 🛠️ Fixes:
-    • The status label disappear when the string exceeds the window bounds.
+    • The status label disappear when the text exceeds the control bounds.
 
 ## v1.1 🔄
 #### 🚀 New Features:

@@ -6,17 +6,22 @@ Imports System.ComponentModel
 Imports System.IO
 Imports System.IO.Compression
 Imports System.Runtime.InteropServices
+Imports System.Runtime.Versioning
 Imports System.Text
 Imports System.Threading
+Imports System.Windows.Media.Animation
 
 Imports DevCase.Extensions
 Imports DevCase.Win32
+Imports DevCase.Win32.Enums
 
 Imports DiscUtils
 
 Imports DiscUtils.Iso9660
 
 Imports Microsoft.WindowsAPICodePack.Taskbar
+
+Imports MS.WindowsAPICodePack.Internal
 
 Friend NotInheritable Class Form1
 
@@ -29,6 +34,11 @@ Friend NotInheritable Class Form1
     Private isos As IEnumerable(Of FileInfo)
     Private keys As IEnumerable(Of FileInfo)
     Private isoAndKeyPairs As IDictionary(Of FileInfo, FileInfo)
+
+    ''' <summary>
+    ''' Directory where to unzip zipped isos and decryption keys.
+    ''' </summary>
+    Private ReadOnly tempFolderPath As String = Path.Combine(Path.GetTempPath, My.Application.Info.Title)
 
     ''' <summary>
     ''' CMD process to embed its window in the UI, and where PS3Dec.exe will run.
@@ -83,7 +93,6 @@ Friend NotInheritable Class Form1
 
     Private Sub Form1_Shown(sender As Object, e As EventArgs) _
     Handles MyBase.Shown
-
         Me.MinimumSize = Me.Size
         Me.LoadUserSettings()
         Me.Opacity = 100
@@ -117,7 +126,7 @@ Friend NotInheritable Class Form1
 
         If Not e.Cancel Then
             Me.SaveUserSettings()
-            Me.UpdateStatus("Program is being closed.", writeToLogFile:=True)
+            Me.UpdateStatus("Program is being closed...", writeToLogFile:=True)
             Me.DeinitializeLogger()
         End If
     End Sub
@@ -199,6 +208,8 @@ Friend NotInheritable Class Form1
         Me.UpdateStatus($"Starting a new decryption procedure...", writeToLogFile:=True)
         Me.ResetProgressBar()
 
+        Me.ClearTempFiles("*")
+
         If Not Me.FetchISOs() OrElse
            Not Me.FetchDecryptionKeys() OrElse
            Not Me.BuildisoAndKeyPairs() OrElse
@@ -222,6 +233,7 @@ Friend NotInheritable Class Form1
 
                 If Not Me.BackgroundWorker1.CancellationPending Then
                     Me.ProcessDecryption(pair, currentIsoIndex, totalIsoCount)
+                    Me.ClearTempFiles(Path.GetFileNameWithoutExtension(pair.Key.Name))
                     Me.UpdateProgressBar(totalIsoCount, Interlocked.Increment(currentIsoIndex))
                 End If
             Next
@@ -274,22 +286,25 @@ Friend NotInheritable Class Form1
 #Region " Private Methods "
 
     ''' <summary>
-    ''' Fetches the encrypted PS3 *.iso files.
+    ''' Fetches the encrypted PS3 *.iso / *.zip files.
     ''' </summary>
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
     Private Function FetchISOs() As Boolean
 
-        Me.UpdateStatus("Fetching encrypted PS3 ISOs...", writeToLogFile:=True)
+        Me.UpdateStatus("Fetching encrypted PS3 disc images...", writeToLogFile:=True)
         Try
-            Me.isos = Form1.Settings.EncryptedPS3DiscsDir?.GetFiles("*.iso", SearchOption.TopDirectoryOnly)
+            Me.isos = Form1.Settings.EncryptedPS3DiscsDir?.
+                                     GetFiles("*.*", SearchOption.TopDirectoryOnly).
+                                     Where(Function(x) x.Extension.ToLowerInvariant() = ".iso" OrElse
+                                                       x.Extension.ToLowerInvariant() = ".zip")
 
         Catch ex As Exception
-            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 ISOs", ex.Message, MessageBoxIcon.Error)
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 disc images", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
         If Not Me.isos.Any() Then
-            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 ISOs", $"Can't find any ISO file in the specified directory: '{Form1.Settings.EncryptedPS3DiscsDir}'", MessageBoxIcon.Error)
+            Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 disc images", $"Can't find any ISO or ZIP file in the specified directory: '{Form1.Settings.EncryptedPS3DiscsDir}'", MessageBoxIcon.Error)
             Return False
         End If
 
@@ -307,7 +322,8 @@ Friend NotInheritable Class Form1
             Me.keys = Form1.Settings.DecryptionKeysDir?.
                                      GetFiles("*.*", SearchOption.TopDirectoryOnly).
                                      Where(Function(x) x.Extension.ToLowerInvariant() = ".dkey" OrElse
-                                                       x.Extension.ToLowerInvariant() = ".txt")
+                                                       x.Extension.ToLowerInvariant() = ".txt" OrElse
+                                                       x.Extension.ToLowerInvariant() = ".zip")
         Catch ex As Exception
             Form1.ShowMessageBoxInUIThread(Me, "Error fetching decryption keys", ex.Message, MessageBoxIcon.Error)
             Return False
@@ -363,10 +379,16 @@ Friend NotInheritable Class Form1
     ''' Validates a PS3 ISO file.
     ''' </summary>
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
-    Private Function ValidatePS3Iso(iso As FileInfo) As Boolean
+    Private Function ValidatePS3Iso(ByRef refIso As FileInfo, percentage As Integer, currentIsoIndex As Integer, totalIsoCount As Integer) As Boolean
 
+        refIso = Me.UnzipFileIfNecessary(refIso, percentage, currentIsoIndex, totalIsoCount, "PS3 ISO")
+        If refIso Is Nothing Then
+            Return False
+        End If
+
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {refIso.Name} | Validating encrypted PS3 ISO...", writeToLogFile:=True)
         Try
-            Using isoStream As FileStream = File.OpenRead(iso.FullName),
+            Using isoStream As FileStream = File.OpenRead(refIso.FullName),
                   cd As New CDReader(isoStream, joliet:=False)
 
                 Dim isExpectedClusterSize As Boolean = cd.ClusterSize = 2048
@@ -378,13 +400,13 @@ Friend NotInheritable Class Form1
                 If Not isExpectedClusterSize OrElse
                    Not isExpectedVolumeLabel OrElse
                    Not existsPS3GAMEDir Then
-                    Form1.ShowMessageBoxInUIThread(Me, "Error validating encrypted PS3 ISO", $"The ISO file is not a PS3 disc image: {iso.FullName}", MessageBoxIcon.Error)
+                    Form1.ShowMessageBoxInUIThread(Me, "Error validating encrypted PS3 ISO", $"The ISO file is not a PS3 disc image: {refIso.FullName}", MessageBoxIcon.Error)
                     Return False
                 End If
             End Using
 
         Catch ex As Exception
-            Form1.ShowMessageBoxInUIThread(Me, $"Error validating encrypted PS3 PS3 ISO.{Environment.NewLine & Environment.NewLine}File: {iso.FullName}{Environment.NewLine & Environment.NewLine}Error message: {ex.Message}", ex.Message, MessageBoxIcon.Error)
+            Form1.ShowMessageBoxInUIThread(Me, $"Error validating encrypted PS3 PS3 ISO.{Environment.NewLine & Environment.NewLine}File: {refIso.FullName}{Environment.NewLine & Environment.NewLine}Error message: {ex.Message}", ex.Message, MessageBoxIcon.Error)
             Return False
         End Try
 
@@ -420,22 +442,31 @@ Friend NotInheritable Class Form1
 
         Dim percentage As Integer = CInt(currentIsoIndex / totalIsoCount * 100)
 
-        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Parsing decryption key file content...", writeToLogFile:=True)
         Dim dkeyString As String = Nothing
-        If Not Me.ReadDecryptionKey(pair.Value, dkeyString) Then
+        If Not Me.ReadDecryptionKey(pair.Value, dkeyString, percentage, currentIsoIndex, totalIsoCount) Then
             Exit Sub
         End If
 
-        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Validating encrypted PS3 ISO...", writeToLogFile:=True)
-        If Not Me.ValidatePS3Iso(pair.Key) Then
+        Dim refIso As FileInfo = pair.Key
+        Dim sizeString As String = Me.FormatFileSize(refIso.Length, StrFormatByteSizeFlags.RoundToNearest)
+
+        If Not Me.ValidatePS3Iso(refIso, percentage, currentIsoIndex, totalIsoCount) Then
             Exit Sub
         End If
 
-        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {pair.Key.Name} | Writing decrypted PS3 ISO to output directory...", writeToLogFile:=True)
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {refIso.Name} | Writing decrypted PS3 ISO ({sizeString}) to output directory...", writeToLogFile:=True)
         If Not Me.EnsureOutputDirectoryExists() Then
             Exit Sub
         End If
-        Me.ExecutePS3Dec(pair.Key, dkeyString, currentIsoIndex, totalIsoCount)
+
+        Dim drive As DriveInfo = Form1.Settings.DecryptionKeysDir.GetDriveInfo()
+        Dim requiredSizeString As String = Me.FormatFileSize(refIso.Length, StrFormatByteSizeFlags.RoundToNearest)
+        If Not Me.DriveHasFreeSpace(drive, refIso.Length) Then
+            Form1.ShowMessageBoxInUIThread(Me, $"Error writing decrypted PS3 ISO.", $"Drive {drive} requires {requiredSizeString} of free space to write the file.", MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        Me.ExecutePS3Dec(pair, refIso, dkeyString, currentIsoIndex, totalIsoCount)
 
     End Sub
 
@@ -443,8 +474,14 @@ Friend NotInheritable Class Form1
     ''' Reads and validates the decryption key from a file.
     ''' </summary>
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
-    Private Function ReadDecryptionKey(keyFile As FileInfo, ByRef refKeyString As String) As Boolean
+    Private Function ReadDecryptionKey(keyFile As FileInfo, ByRef refKeyString As String, percentage As Integer, currentIsoIndex As Integer, totalIsoCount As Integer) As Boolean
 
+        keyFile = Me.UnzipFileIfNecessary(keyFile, percentage, currentIsoIndex, totalIsoCount, "Decryption key")
+        If keyFile Is Nothing Then
+            Return False
+        End If
+
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {keyFile.Name} | Parsing decryption key file content...", writeToLogFile:=True)
         Try
             Dim dkeyString As String = File.ReadAllText(keyFile.FullName, Encoding.Default).Trim()
             If dkeyString.Length <> 32 Then
@@ -479,6 +516,7 @@ Friend NotInheritable Class Form1
     ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
     Private Function EnsureOutputDirectoryExists() As Boolean
 
+        Form1.Settings.OutputDir.Refresh()
         If Not Form1.Settings.OutputDir.Exists Then
             Try
                 Form1.Settings.OutputDir.Create()
@@ -490,7 +528,7 @@ Friend NotInheritable Class Form1
         Return True
     End Function
 
-    Private Sub ExecutePS3Dec(isoFile As FileInfo, dkeyString As String, currentIsoIndex As Integer, totalIsoCount As Integer)
+    Private Sub ExecutePS3Dec(pair As KeyValuePair(Of FileInfo, FileInfo), isoFile As FileInfo, dkeyString As String, currentIsoIndex As Integer, totalIsoCount As Integer)
 
         Dim currentProcess As Process
 
@@ -564,6 +602,7 @@ Friend NotInheritable Class Form1
                 .StartInfo.FileName = Form1.Settings.PS3DecExeFile.FullName
                 .StartInfo.Arguments = $"d key ""{dkeyString}"" ""{isoFile.FullName}"" ""{Form1.Settings.OutputDir.FullName}\{isoFile.Name}"""
                 .StartInfo.CreateNoWindow = True
+                .StartInfo.RedirectStandardError = True
             End With
 
             Try
@@ -578,10 +617,15 @@ Friend NotInheritable Class Form1
         If currentProcess.ExitCode = 0 Then
             Dim percentage As Integer = CInt(currentIsoIndex / totalIsoCount * 100)
             Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {isoFile.Name} | Decryption completed.", writeToLogFile:=True)
-            Me.CanDeleteEncryptedISO(isoFile)
-            Me.CanDeleteDecryptionKey(Me.isoAndKeyPairs(isoFile))
+            Me.CanDeleteEncryptedISO(pair.Key)
+            Me.CanDeleteDecryptionKey(pair.Value)
         Else
-            Me.UpdateStatus($"PS3Dec.exe failed to decrypt, with exit code: {currentProcess.ExitCode}", writeToLogFile:=True)
+            If currentProcess.StartInfo.RedirectStandardError Then
+                Dim errorString As String = currentProcess.StandardError.ReadToEnd()
+                Me.UpdateStatus($"PS3Dec.exe failed to decrypt, with process exit code: {currentProcess.ExitCode} and error message: {errorString}", writeToLogFile:=True)
+            Else
+                Me.UpdateStatus($"PS3Dec.exe failed to decrypt, with process exit code: {currentProcess.ExitCode}", writeToLogFile:=True)
+            End If
         End If
     End Sub
 
@@ -608,6 +652,106 @@ Friend NotInheritable Class Form1
             End Try
         End If
     End Sub
+
+    Private Sub ClearTempFiles(fileNamePattern As String)
+        Dim dir As New DirectoryInfo(Me.tempFolderPath)
+        If Not dir.Exists Then
+            Return
+        End If
+
+        Me.UpdateStatus("Clearing temp files...", writeToLogFile:=False)
+        For Each file As FileInfo In dir.GetFiles($"{fileNamePattern}.*", SearchOption.TopDirectoryOnly)
+            Try
+                file.Delete()
+            Catch ex As Exception
+                ' Ignore.
+            End Try
+        Next file
+    End Sub
+
+    ''' <summary>
+    ''' If the source file is a zip archive, unzips it to the temporary folder (<see cref="Form1.tempFolderPath"/>).
+    ''' </summary>
+    ''' <returns>
+    ''' If the source file is a zip archive, returns a <see cref="FileInfo"/> pointing to the unzipped file.
+    ''' Otherwise, returns the source <see cref="FileInfo"/>.
+    ''' </returns>
+    Private Function UnzipFileIfNecessary(file As FileInfo, percentage As Integer, currentIsoIndex As Integer, totalIsoCount As Integer, additionalStatusInfoString As String) As FileInfo
+
+        If Not file.Extension.Equals(".zip", StringComparison.OrdinalIgnoreCase) Then
+            Return file
+        End If
+
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {file.Name} | Validating zip archive ({additionalStatusInfoString})...", writeToLogFile:=True)
+        If Not Me.ValidateZipArchive(file) Then
+            Return Nothing
+        End If
+
+        Me.UpdateStatus($"{percentage}% ({currentIsoIndex}/{totalIsoCount}) | {file.Name} | Unzipping file ({additionalStatusInfoString})...", writeToLogFile:=True)
+        Try
+            Dim drive As DriveInfo = New DirectoryInfo(tempFolderPath).GetDriveInfo()
+            Const safetyExtraSize As Long = CLng(1024 ^ 2) * 300 ' 300 MB
+            Dim requiredSizeString As String = Me.FormatFileSize(file.Length + safetyExtraSize, StrFormatByteSizeFlags.RoundToNearest)
+            If Not Me.DriveHasFreeSpace(drive, file.Length) Then
+                Form1.ShowMessageBoxInUIThread(Me, $"Error extracting zip archive.", $"Drive {drive} requires {requiredSizeString} of free space to extract the zip archive.", MessageBoxIcon.Error)
+                Return Nothing
+            End If
+
+            Using archive As ZipArchive = ZipFile.OpenRead(file.FullName)
+
+                Dim entry As ZipArchiveEntry = archive.Entries.Single()
+                Dim destinationPath As String = Path.Combine(Me.tempFolderPath, entry.Name)
+                Dim unzippedFile As New FileInfo(destinationPath)
+
+                If Not Directory.Exists(Me.tempFolderPath) Then
+                    Directory.CreateDirectory(Me.tempFolderPath)
+                End If
+
+                entry.ExtractToFile(unzippedFile.FullName, overwrite:=True)
+                unzippedFile.Refresh()
+                Return unzippedFile
+            End Using
+
+        Catch ex As Exception
+            Form1.ShowMessageBoxInUIThread(Me, $"Error extracting zip archive.", ex.Message, MessageBoxIcon.Error)
+
+        End Try
+
+        Return Nothing
+
+    End Function
+
+    ''' <summary>
+    ''' Validates whether the specified file is a zip archive, 
+    ''' and whether the zip archive only contains a single file.
+    ''' </summary>
+    ''' <returns><see langword="True"/> if successful, <see langword="False"/> otherwise.</returns>
+    Private Function ValidateZipArchive(file As FileInfo) As Boolean
+
+        Try
+            Using archive As ZipArchive = ZipFile.OpenRead(file.FullName)
+                Select Case archive.Entries.Count
+                    Case 1
+                        Return True
+                    Case 0
+                        Form1.ShowMessageBoxInUIThread(Me, $"Error validating zip archive.", $"The zip archive is empty: {file.FullName}", MessageBoxIcon.Error)
+                        Return False
+                    Case Else
+                        Form1.ShowMessageBoxInUIThread(Me, $"Error validating zip archive.", $"The zip archive contains more than one file: {file.FullName}", MessageBoxIcon.Error)
+                        Return False
+                End Select
+            End Using
+
+        Catch ex As InvalidDataException
+            Return False
+
+        Catch ex As Exception
+            Form1.ShowMessageBoxInUIThread(Me, $"Error validating zip archive.", ex.Message, MessageBoxIcon.Error)
+            Return False
+
+        End Try
+
+    End Function
 
     Private Sub UpdateStatus(statusText As String, writeToLogFile As Boolean, Optional eventType As TraceEventType = TraceEventType.Information)
         Me.ToolStripStatusLabel1.Text = statusText
@@ -685,7 +829,7 @@ Friend NotInheritable Class Form1
     Private Sub SaveUserSettings()
         Try
             If Form1.Settings.SaveSettingsOnExit Then
-                Me.UpdateStatus($"Saving user settings...", writeToLogFile:=True)
+                Me.UpdateStatus($"Saving user settings...", writeToLogFile:=False)
                 My.Settings.EncryptedPS3DiscsDir = Form1.Settings.EncryptedPS3DiscsDir.FullName
                 My.Settings.DecryptionKeysDir = Form1.Settings.DecryptionKeysDir.FullName
                 My.Settings.PS3DecExePath = Form1.Settings.PS3DecExeFile.FullName
@@ -714,7 +858,7 @@ Friend NotInheritable Class Form1
 
         Try
             If My.Settings.SaveSettingsOnExit Then
-                Me.UpdateStatus($"Loading user settings...", writeToLogFile:=True)
+                Me.UpdateStatus($"Loading user settings...", writeToLogFile:=False)
                 Dim dirPath As String = My.Application.Info.DirectoryPath
                 Form1.Settings.EncryptedPS3DiscsDir = New DirectoryInfo(My.Settings.EncryptedPS3DiscsDir.Replace(dirPath, "."))
                 Form1.Settings.DecryptionKeysDir = New DirectoryInfo(My.Settings.DecryptionKeysDir.Replace(dirPath, "."))
@@ -737,6 +881,44 @@ Friend NotInheritable Class Form1
         End Try
     End Sub
 
+
+    Public Function DriveHasFreeSpace(drive As DriveInfo, requiredSpaceInBytes As Long) As Boolean
+
+        If drive.IsReady Then
+            Dim freeSpace As Long = drive.AvailableFreeSpace
+            Return freeSpace > requiredSpaceInBytes
+        Else
+            Return False
+        End If
+
+    End Function
+
+    Private Function FormatFileSize(bytes As Long, flags As StrFormatByteSizeFlags) As String
+
+        Dim buffer As New StringBuilder(8, 16)
+        Dim result As Integer = NativeMethods.StrFormatByteSizeEx(CULng(bytes), flags, buffer, 16)
+        If result <> 0 Then ' HResult.S_OK
+            Marshal.ThrowExceptionForHR(result)
+        End If
+
+        Return buffer.ToString()
+
+    End Function
+
 #End Region
 
 End Class
+
+
+Module FileSystemInfoExtensions
+    <System.Runtime.CompilerServices.Extension>
+    Public Function GetDriveInfo(fsi As IO.FileSystemInfo) As DriveInfo
+
+        If fsi Is Nothing Then
+            Throw New ArgumentNullException(paramName:=NameOf(fsi))
+        End If
+
+        Dim driveName As String = Path.GetPathRoot(fsi.FullName)
+        Return New DriveInfo(driveName)
+    End Function
+End Module

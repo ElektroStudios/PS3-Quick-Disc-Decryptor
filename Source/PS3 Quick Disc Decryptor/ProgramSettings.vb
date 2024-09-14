@@ -11,8 +11,8 @@ Friend NotInheritable Class ProgramSettings
 
     <Category("1) Resources")>
     <DisplayName("Encrypted PS3 disc images")>
-    <Description("Directory path that contains encrypted PS3 disc images (*.iso files) from Redump.
-For more information, visit: http://redump.org/discs/system/ps3/")>
+    <Description("Directory path that contains encrypted PS3 disc images from Redump.
+The files can be either *.iso or *.zip.")>
     <Editor(GetType(FolderDialogEditor), GetType(UITypeEditor))>
     Public Property EncryptedPS3DiscsDir As DirectoryInfo
     Private Function ShouldSerializeEncryptedPS3DiscsDir() As Boolean
@@ -24,7 +24,7 @@ For more information, visit: http://redump.org/discs/system/ps3/")>
     <Category("1) Resources")>
     <DisplayName("Decryption keys")>
     <Description("Directory path containing decryption keys for the encrypted PS3 disc images from Redump.
-The files can be *.dkey or *.txt and each must contain a string of 32 characters long.")>
+The files can be either *.dkey or *.txt containing a string of 32 characters long.")>
     <Editor(GetType(FolderDialogEditor), GetType(UITypeEditor))>
     Public Property DecryptionKeysDir As DirectoryInfo
     Private Function ShouldSerializeDecryptionKeysDir() As Boolean

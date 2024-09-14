@@ -14,6 +14,11 @@ Namespace DevCase.Win32
     Friend Module Win32LibNames
 
         ''' <summary>
+        ''' ShlwApi.dll
+        ''' </summary>
+        Friend Const ShlwApi As String = "ShlwApi.dll"
+
+        ''' <summary>
         ''' User32.dll
         ''' </summary>
         Friend Const User32 As String = "User32.dll"

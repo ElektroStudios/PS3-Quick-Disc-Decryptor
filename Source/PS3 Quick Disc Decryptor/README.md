@@ -16,6 +16,7 @@ The decrypted PS3 disc images will work with [RPCS3](https://rpcs3.net/) emulato
 
  - Simple, user-friendly graphical user-interface.
  - Designed for batch processing.
+ - Supports zip archives (for both PS3 disc images and decryption key files).
  - Meticulous status report and error handling.
  - Logging features.
  - Allows to abort the decryption procedure on demand.

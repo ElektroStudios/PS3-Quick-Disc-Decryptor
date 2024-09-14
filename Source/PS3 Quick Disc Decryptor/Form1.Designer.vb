@@ -45,7 +45,7 @@ Partial Class Form1
         Me.PropertyGrid_Settings.Name = "PropertyGrid_Settings"
         Me.PropertyGrid_Settings.PropertySort = PropertySort.Categorized
         Me.PropertyGrid_Settings.Size = New Size(642, 266)
-        Me.PropertyGrid_Settings.TabIndex = 9
+        Me.PropertyGrid_Settings.TabIndex = 1
         Me.PropertyGrid_Settings.ToolbarVisible = False
         ' 
         ' Button_StartDecryption
@@ -54,7 +54,7 @@ Partial Class Form1
         Me.Button_StartDecryption.Location = New Point(3, 6)
         Me.Button_StartDecryption.Name = "Button_StartDecryption"
         Me.Button_StartDecryption.Size = New Size(127, 33)
-        Me.Button_StartDecryption.TabIndex = 10
+        Me.Button_StartDecryption.TabIndex = 0
         Me.Button_StartDecryption.Text = "Start Decryption"
         Me.Button_StartDecryption.UseVisualStyleBackColor = True
         ' 
@@ -64,7 +64,7 @@ Partial Class Form1
         Me.ProgressBar_Decryption.Location = New Point(270, 6)
         Me.ProgressBar_Decryption.Name = "ProgressBar_Decryption"
         Me.ProgressBar_Decryption.Size = New Size(369, 33)
-        Me.ProgressBar_Decryption.TabIndex = 12
+        Me.ProgressBar_Decryption.TabIndex = 2
         ' 
         ' StatusStrip1
         ' 
@@ -73,7 +73,7 @@ Partial Class Form1
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Padding = New Padding(2, 0, 13, 0)
         Me.StatusStrip1.Size = New Size(648, 22)
-        Me.StatusStrip1.TabIndex = 13
+        Me.StatusStrip1.TabIndex = 0
         Me.StatusStrip1.Text = "StatusStrip1"
         ' 
         ' ToolStripStatusLabel1
@@ -81,7 +81,7 @@ Partial Class Form1
         Me.ToolStripStatusLabel1.DisplayStyle = ToolStripItemDisplayStyle.Text
         Me.ToolStripStatusLabel1.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point)
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New Size(602, 17)
+        Me.ToolStripStatusLabel1.Size = New Size(633, 17)
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.Text = "..."
         Me.ToolStripStatusLabel1.TextAlign = ContentAlignment.MiddleLeft
@@ -97,7 +97,7 @@ Partial Class Form1
         Me.Button_Abort.Location = New Point(136, 6)
         Me.Button_Abort.Name = "Button_Abort"
         Me.Button_Abort.Size = New Size(128, 33)
-        Me.Button_Abort.TabIndex = 14
+        Me.Button_Abort.TabIndex = 1
         Me.Button_Abort.Text = "Abort"
         Me.Button_Abort.UseVisualStyleBackColor = True
         ' 
@@ -113,7 +113,7 @@ Partial Class Form1
         Me.TextBox_PS3Dec_Output.Name = "TextBox_PS3Dec_Output"
         Me.TextBox_PS3Dec_Output.ReadOnly = True
         Me.TextBox_PS3Dec_Output.Size = New Size(642, 144)
-        Me.TextBox_PS3Dec_Output.TabIndex = 0
+        Me.TextBox_PS3Dec_Output.TabIndex = 2
         ' 
         ' TableLayoutPanel1
         ' 
@@ -130,7 +130,7 @@ Partial Class Form1
         Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 32F))
         Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 10F))
         Me.TableLayoutPanel1.Size = New Size(648, 470)
-        Me.TableLayoutPanel1.TabIndex = 15
+        Me.TableLayoutPanel1.TabIndex = 1
         ' 
         ' Panel_Buttons
         ' 
@@ -141,7 +141,7 @@ Partial Class Form1
         Me.Panel_Buttons.Location = New Point(3, 425)
         Me.Panel_Buttons.Name = "Panel_Buttons"
         Me.Panel_Buttons.Size = New Size(642, 42)
-        Me.Panel_Buttons.TabIndex = 16
+        Me.Panel_Buttons.TabIndex = 0
         ' 
         ' Form1
         ' 
