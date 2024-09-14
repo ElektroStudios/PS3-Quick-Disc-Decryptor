@@ -1,7 +1,7 @@
 # PS3 Quick Disc Decryptor Change Log 📋
 
 ## v1.3 *(current)* 🆕
-#### 🌟 New Features:
+#### 🚀 New Features:
     • Added support for zip archives (for both PS3 disc images and decryption key files).
 #### 🌟 Improvements:
     • Additional PS3Dec process error information when compact mode is enabled.
