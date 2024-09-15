@@ -1,6 +1,10 @@
 # PS3 Quick Disc Decryptor Change Log 📋
 
-## v1.3 *(current)* 🆕
+## v1.3.1 *(current)* 🆕
+#### 🛠️ Fixes:
+    • A mistake in PS3 ISO validation (removed volume name check).
+
+## v1.3 🔄
 #### 🚀 New Features:
     • Added support for zip archives (for both PS3 disc images and decryption key files).
 #### 🌟 Improvements:

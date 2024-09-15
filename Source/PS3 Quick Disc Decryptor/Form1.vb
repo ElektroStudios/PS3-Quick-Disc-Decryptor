@@ -392,13 +392,11 @@ Friend NotInheritable Class Form1
                   cd As New CDReader(isoStream, joliet:=False)
 
                 Dim isExpectedClusterSize As Boolean = cd.ClusterSize = 2048
-                Dim isExpectedVolumeLabel As Boolean = cd.VolumeLabel = "PS3VOLUME"
 
                 Dim existsPS3GAMEDir As Boolean =
                     cd.Root.GetDirectories("PS3_GAME", SearchOption.TopDirectoryOnly).Any()
 
                 If Not isExpectedClusterSize OrElse
-                   Not isExpectedVolumeLabel OrElse
                    Not existsPS3GAMEDir Then
                     Form1.ShowMessageBoxInUIThread(Me, "Error validating encrypted PS3 ISO", $"The ISO file is not a PS3 disc image: {refIso.FullName}", MessageBoxIcon.Error)
                     Return False
