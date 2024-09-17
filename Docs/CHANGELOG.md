@@ -1,6 +1,10 @@
 # PS3 Quick Disc Decryptor Change Log 📋
 
-## v1.3.1 *(current)* 🆕
+## v1.3.2 *(current)* 🆕
+#### 🛠️ Fixes:
+    • Widow size and location were not restored when the program is minimized and gets closed.
+
+## v1.3.1 🔄
 #### 🛠️ Fixes:
     • A mistake in PS3 ISO validation (removed volume name check).
 
