@@ -836,7 +836,7 @@ Friend NotInheritable Class Form1
                 My.Settings.DeleteKeysAfterUse = Form1.Settings.DeleteKeysAfterUse
                 My.Settings.CompactMode = Form1.Settings.CompactMode
                 My.Settings.RememberSizeAndPosition = Form1.Settings.RememberSizeAndPosition
-                If My.Settings.RememberSizeAndPosition Then
+                If My.Settings.RememberSizeAndPosition AndAlso Me.WindowState <> FormWindowState.Minimized Then
                     My.Settings.WindowPosition = Me.Location
                     My.Settings.WindowSize = Me.Size
                 End If

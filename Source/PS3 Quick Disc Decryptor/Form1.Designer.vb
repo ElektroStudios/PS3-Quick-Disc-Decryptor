@@ -44,7 +44,7 @@ Partial Class Form1
         Me.PropertyGrid_Settings.Location = New Point(3, 3)
         Me.PropertyGrid_Settings.Name = "PropertyGrid_Settings"
         Me.PropertyGrid_Settings.PropertySort = PropertySort.Categorized
-        Me.PropertyGrid_Settings.Size = New Size(642, 266)
+        Me.PropertyGrid_Settings.Size = New Size(642, 284)
         Me.PropertyGrid_Settings.TabIndex = 1
         Me.PropertyGrid_Settings.ToolbarVisible = False
         ' 
@@ -108,11 +108,11 @@ Partial Class Form1
         Me.TextBox_PS3Dec_Output.Dock = DockStyle.Fill
         Me.TextBox_PS3Dec_Output.Enabled = False
         Me.TextBox_PS3Dec_Output.ForeColor = Color.IndianRed
-        Me.TextBox_PS3Dec_Output.Location = New Point(3, 275)
+        Me.TextBox_PS3Dec_Output.Location = New Point(3, 293)
         Me.TextBox_PS3Dec_Output.Multiline = True
         Me.TextBox_PS3Dec_Output.Name = "TextBox_PS3Dec_Output"
         Me.TextBox_PS3Dec_Output.ReadOnly = True
-        Me.TextBox_PS3Dec_Output.Size = New Size(642, 144)
+        Me.TextBox_PS3Dec_Output.Size = New Size(642, 123)
         Me.TextBox_PS3Dec_Output.TabIndex = 2
         ' 
         ' TableLayoutPanel1
@@ -126,9 +126,9 @@ Partial Class Form1
         Me.TableLayoutPanel1.Location = New Point(0, 0)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 3
-        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 58F))
-        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 32F))
-        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 10F))
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 69.07545F))
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 30.92455F))
+        Me.TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 50F))
         Me.TableLayoutPanel1.Size = New Size(648, 470)
         Me.TableLayoutPanel1.TabIndex = 1
         ' 
@@ -138,9 +138,9 @@ Partial Class Form1
         Me.Panel_Buttons.Controls.Add(Me.Button_Abort)
         Me.Panel_Buttons.Controls.Add(Me.ProgressBar_Decryption)
         Me.Panel_Buttons.Dock = DockStyle.Fill
-        Me.Panel_Buttons.Location = New Point(3, 425)
+        Me.Panel_Buttons.Location = New Point(3, 422)
         Me.Panel_Buttons.Name = "Panel_Buttons"
-        Me.Panel_Buttons.Size = New Size(642, 42)
+        Me.Panel_Buttons.Size = New Size(642, 45)
         Me.Panel_Buttons.TabIndex = 0
         ' 
         ' Form1
@@ -150,9 +150,9 @@ Partial Class Form1
         Me.ClientSize = New Size(648, 492)
         Me.Controls.Add(Me.TableLayoutPanel1)
         Me.Controls.Add(Me.StatusStrip1)
+        Me.DoubleBuffered = True
         Me.Font = New Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point)
         Me.Icon = CType(resources.GetObject("$this.Icon"), Icon)
-        Me.MaximizeBox = False
         Me.Name = "Form1"
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.Text = "PS3 Quick Disc Decryptor"
