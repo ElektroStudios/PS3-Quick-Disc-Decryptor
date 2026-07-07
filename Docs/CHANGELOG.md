@@ -1,4 +1,4 @@
-# PS3 Quick Disc Decryptor Change Log 📋
+﻿# PS3 Quick Disc Decryptor Change Log 📋
 
 ## v1.3.2 *(current)* 🆕
 #### 🛠️ Fixes:

@@ -1,4 +1,4 @@
-# PS3 Quick Disc Decryptor 💿🔑
+﻿# PS3 Quick Disc Decryptor 💿🔑
 
 ### User-Friendly GUI to decrypt Redump's PS3 disc images using PS3Dec.
 
