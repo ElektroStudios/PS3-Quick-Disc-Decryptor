@@ -295,8 +295,8 @@ Friend NotInheritable Class Form1
         Try
             Me.isos = Form1.Settings.EncryptedPS3DiscsDir?.
                                      GetFiles("*.*", SearchOption.TopDirectoryOnly).
-                                     Where(Function(x) x.Extension.ToLowerInvariant() = ".iso" OrElse
-                                                       x.Extension.ToLowerInvariant() = ".zip")
+                                     Where(Function(x) x.Extension.Equals(".iso", StringComparison.OrdinalIgnoreCase) OrElse
+                                                       x.Extension.Equals(".zip", StringComparison.OrdinalIgnoreCase))
 
         Catch ex As Exception
             Form1.ShowMessageBoxInUIThread(Me, "Error fetching encrypted PS3 disc images", ex.Message, MessageBoxIcon.Error)
@@ -321,9 +321,9 @@ Friend NotInheritable Class Form1
         Try
             Me.keys = Form1.Settings.DecryptionKeysDir?.
                                      GetFiles("*.*", SearchOption.TopDirectoryOnly).
-                                     Where(Function(x) x.Extension.ToLowerInvariant() = ".dkey" OrElse
-                                                       x.Extension.ToLowerInvariant() = ".txt" OrElse
-                                                       x.Extension.ToLowerInvariant() = ".zip")
+                                     Where(Function(x) x.Extension.Equals(".dkey", StringComparison.OrdinalIgnoreCase) OrElse
+                                                       x.Extension.Equals(".txt", StringComparison.OrdinalIgnoreCase) OrElse
+                                                       x.Extension.Equals(".zip", StringComparison.OrdinalIgnoreCase))
         Catch ex As Exception
             Form1.ShowMessageBoxInUIThread(Me, "Error fetching decryption keys", ex.Message, MessageBoxIcon.Error)
             Return False
@@ -394,7 +394,7 @@ Friend NotInheritable Class Form1
                 Dim isExpectedClusterSize As Boolean = cd.ClusterSize = 2048
 
                 Dim existsPS3GAMEDir As Boolean =
-                    cd.Root.GetDirectories("PS3_GAME", SearchOption.TopDirectoryOnly).Any()
+                    cd.Root.GetDirectories("PS3_GAME", SearchOption.TopDirectoryOnly).Length <> 0
 
                 If Not isExpectedClusterSize OrElse
                    Not existsPS3GAMEDir Then
@@ -488,7 +488,7 @@ Friend NotInheritable Class Form1
             End If
 
 #If (NET7_0_OR_GREATER) Then
-            Dim isHex As Boolean = dkeyString.All(Function(c As Char) Char.IsAsciiHexDigit(c)) AndAlso (dkeyString.Length Mod 2) = 0 ' is even.
+            Dim isHexString As Boolean = dkeyString.All(Function(c As Char) Char.IsAsciiHexDigit(c)) AndAlso (dkeyString.Length Mod 2) = 0 ' is even.
 #Else
             Dim isHexString As Boolean = StringExtensions.IsHexadecimal(dkeyString)
 #End If
@@ -912,9 +912,7 @@ Module FileSystemInfoExtensions
     <System.Runtime.CompilerServices.Extension>
     Public Function GetDriveInfo(fsi As IO.FileSystemInfo) As DriveInfo
 
-        If fsi Is Nothing Then
-            Throw New ArgumentNullException(paramName:=NameOf(fsi))
-        End If
+        ArgumentNullException.ThrowIfNull(fsi, NameOf(fsi))
 
         Dim driveName As String = Path.GetPathRoot(fsi.FullName)
         Return New DriveInfo(driveName)
